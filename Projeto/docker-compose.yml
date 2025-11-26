@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  # Serviço 1: Robô de Cálculo (Roda uma vez e para)
+  calculadora:
+    build: .
+    container_name: ia_estoque
+    command: python stock_monitor.py
+    env_file: .env
+    environment:
+      - MYSQL_SSL_CA=/certs/MysqlflexGlobalRootCA.crt.pem
+    volumes:
+      - ./certs:/certs
+    restart: "no"
+
+  # Serviço 2: Site (Fica rodando para você acessar)
+  site:
+    build: .
+    container_name: site_visualizacao
+    command: python web_app.py
+    ports:
+      - "5000:5000"
+    env_file: .env
+    environment:
+      - MYSQL_SSL_CA=/certs/MysqlflexGlobalRootCA.crt.pem
+    volumes:
+      - ./certs:/certs
+    restart: always
