@@ -10,33 +10,28 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout
+    - name: 📥 Checkout do código
       uses: actions/checkout@v4
 
-    # Login no Azure via Service Principal
-    - name: Login no Azure
+    - name: 🔐 Login no Azure via Service Principal
       uses: azure/login@v2
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-    # Login no ACR
-    - name: Login no Azure Container Registry
+    - name: 🔐 Login no Azure Container Registry
       run: |
         echo ${{ secrets.REGISTRY_PASSWORD }} | docker login ${{ secrets.REGISTRY_LOGIN_SERVER }} \
           --username ${{ secrets.REGISTRY_USERNAME }} --password-stdin
 
-    # Build da imagem Docker
-    - name: Build da imagem
+    - name: 🛠️ Build da imagem Docker (usando pasta Projeto/)
       run: |
-        docker build -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/${{ secrets.CONTAINER_IMAGE_NAME }}:latest .
+        docker build -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/${{ secrets.CONTAINER_IMAGE_NAME }}:latest Projeto
 
-    # Push da imagem para o ACR
-    - name: Push da imagem
+    - name: 🚀 Push da imagem para o ACR
       run: |
         docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/${{ secrets.CONTAINER_IMAGE_NAME }}:latest
 
-    # Atualiza o Web App para usar a nova imagem
-    - name: Deploy para o Azure Web App
+    - name: 🌐 Deploy no Azure Web App
       uses: azure/webapps-deploy@v3
       with:
         app-name: ${{ secrets.AZURE_WEBAPP_NAME }}
